@@ -3,14 +3,12 @@ mod cli;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use clap::Parser;
 use ocr2md_core::config::RuntimeConfig;
-use ocr2md_core::http::HttpEngine;
-use ocr2md_core::llm::{LlmClient, LlmConfig};
-use ocr2md_core::ocr::{GlmConfig, GlmOcrClient};
-use tokio::fs;
-use tracing::{info, warn};
+use ocr2md_core::llm::LlmConfig;
+use ocr2md_core::ocr::GlmConfig;
+use ocr2md_core::pipeline::process_file;
 
 use crate::cli::Cli;
 
@@ -25,21 +23,7 @@ async fn main() -> Result<()> {
     let input_path = cli.input;
     let output_path = resolve_output_path(&input_path, cli.output);
 
-    info!(
-        input = %input_path.display(),
-        output = %output_path.display(),
-        provider = ?cli.provider,
-        trace_id,
-        "pipeline_start"
-    );
-
     let runtime = RuntimeConfig::from_env();
-
-    let file_bytes = fs::read(&input_path)
-        .await
-        .with_context(|| format!("failed to read input file: {}", input_path.display()))?;
-
-    let http = HttpEngine::new(runtime.clone())?;
 
     let glm_cfg = GlmConfig::from_sources(
         cli.glm_api_key,
@@ -50,22 +34,6 @@ async fn main() -> Result<()> {
         runtime.max_ocr_chars,
     )?;
 
-    info!(
-        glm_base_url = %glm_cfg.base_url,
-        glm_ocr_url = %glm_cfg.ocr_url,
-        trace_id,
-        "ocr_config_loaded"
-    );
-
-    let ocr_client = GlmOcrClient::new(http.clone(), glm_cfg);
-    let ocr_text = ocr_client
-        .extract_text(&input_path, &file_bytes, &trace_id)
-        .await?;
-
-    if ocr_text.trim().is_empty() {
-        warn!(trace_id, "ocr_output_empty");
-    }
-
     let llm_cfg = LlmConfig::from_sources(
         cli.provider,
         cli.llm_api_key,
@@ -74,19 +42,15 @@ async fn main() -> Result<()> {
         cli.system_prompt,
     )?;
 
-    let llm_client = LlmClient::new(http, llm_cfg, runtime);
-    let markdown = llm_client.to_markdown(&ocr_text, &trace_id).await?;
-
-    fs::write(&output_path, markdown.as_bytes())
-        .await
-        .with_context(|| format!("failed to write output: {}", output_path.display()))?;
-
-    info!(
-        output = %output_path.display(),
-        bytes = markdown.len(),
-        trace_id,
-        "pipeline_done"
-    );
+    process_file(
+        &input_path,
+        &output_path,
+        glm_cfg,
+        llm_cfg,
+        runtime,
+        &trace_id,
+    )
+    .await?;
 
     Ok(())
 }
@@ -125,9 +89,9 @@ fn resolve_output_path(input: &Path, output: Option<PathBuf>) -> PathBuf {
 mod tests {
     use std::path::Path;
 
+    use super::resolve_output_path;
     use ocr2md_core::file_kind::{InputKind, detect_input_kind};
     use pretty_assertions::assert_eq;
-    use super::resolve_output_path;
 
     #[test]
     fn output_path_defaults_to_same_dir_md() {

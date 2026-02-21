@@ -187,10 +187,10 @@ fn parse_glm_file_parse_text(value: &Value) -> Result<String> {
         "/data/text",
         "/result/content",
     ] {
-        if let Some(text) = value.pointer(pointer).and_then(Value::as_str) {
-            if !text.trim().is_empty() {
-                return Ok(text.to_string());
-            }
+        if let Some(text) = value.pointer(pointer).and_then(Value::as_str)
+            && !text.trim().is_empty()
+        {
+            return Ok(text.to_string());
         }
     }
 

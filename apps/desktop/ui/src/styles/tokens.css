@@ -1,0 +1,38 @@
+:root {
+  color-scheme: light;
+  font-family: "Segoe UI", "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  --bg-main: #eef5ff;
+  --bg-panel: rgba(255, 255, 255, 0.82);
+  --bg-panel-strong: #ffffff;
+  --bg-grid: rgba(0, 70, 170, 0.08);
+  --line-soft: rgba(16, 46, 92, 0.16);
+  --line-strong: rgba(16, 46, 92, 0.3);
+
+  --text-strong: #112145;
+  --text-body: #32486f;
+  --text-muted: #5b7096;
+
+  --accent: #005cc8;
+  --accent-strong: #003d88;
+  --accent-soft: rgba(0, 92, 200, 0.14);
+
+  --running: #0b6bcb;
+  --queued: #26616c;
+  --warning: #9a5b00;
+  --success: #0f7a53;
+  --error: #b23b36;
+
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --shadow-soft: 0 10px 28px rgba(9, 25, 60, 0.1);
+  --shadow-card: 0 16px 36px rgba(9, 25, 60, 0.14);
+}

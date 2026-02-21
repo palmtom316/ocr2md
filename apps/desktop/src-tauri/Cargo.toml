@@ -1,0 +1,28 @@
+[package]
+name = "ocr2md-desktop"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Tauri desktop workbench for Ocr2Md"
+default-run = "ocr2md-desktop"
+
+[lib]
+name = "ocr2md_desktop"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ocr2md-desktop"
+path = "src/main.rs"
+
+[dependencies]
+ocr2md-core = { path = "../../../crates/ocr2md-core" }
+dirs = "6.0"
+serde = { version = "1.0", features = ["derive"] }
+tauri = { version = "2.0", features = [] }
+tokio = { version = "1.44", features = ["rt-multi-thread", "macros"] }
+
+[dev-dependencies]
+tempfile = "3.22"
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
