@@ -746,13 +746,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "ocr2md-rs"
+name = "ocr2md-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
  "base64",
  "clap",
- "dotenvy",
  "mime_guess",
  "pretty_assertions",
  "reqwest",
@@ -761,8 +760,20 @@ dependencies = [
  "thiserror",
  "tokio",
  "tracing",
+]
+
+[[package]]
+name = "ocr2md-rs"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "dotenvy",
+ "ocr2md-core",
+ "pretty_assertions",
+ "tokio",
+ "tracing",
  "tracing-subscriber",
- "url",
 ]
 
 [[package]]

@@ -1,24 +1,18 @@
 mod cli;
-mod config;
-mod error;
-mod file_kind;
-mod http;
-mod llm;
-mod ocr;
 
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use anyhow::{Context, Result};
 use clap::Parser;
+use ocr2md_core::config::RuntimeConfig;
+use ocr2md_core::http::HttpEngine;
+use ocr2md_core::llm::{LlmClient, LlmConfig};
+use ocr2md_core::ocr::{GlmConfig, GlmOcrClient};
 use tokio::fs;
 use tracing::{info, warn};
 
 use crate::cli::Cli;
-use crate::config::RuntimeConfig;
-use crate::http::HttpEngine;
-use crate::llm::{LlmClient, LlmConfig};
-use crate::ocr::{GlmConfig, GlmOcrClient};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -131,10 +125,8 @@ fn resolve_output_path(input: &Path, output: Option<PathBuf>) -> PathBuf {
 mod tests {
     use std::path::Path;
 
+    use ocr2md_core::file_kind::{InputKind, detect_input_kind};
     use pretty_assertions::assert_eq;
-
-    use crate::file_kind::{InputKind, detect_input_kind};
-
     use super::resolve_output_path;
 
     #[test]

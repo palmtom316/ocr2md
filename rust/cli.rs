@@ -1,8 +1,7 @@
 use std::path::PathBuf;
 
 use clap::Parser;
-
-use crate::config::LlmProvider;
+use ocr2md_core::config::LlmProvider;
 
 #[derive(Debug, Parser)]
 #[command(
