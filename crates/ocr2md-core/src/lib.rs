@@ -4,3 +4,4 @@ pub mod file_kind;
 pub mod http;
 pub mod llm;
 pub mod ocr;
+pub mod secure_config;
